@@ -46,11 +46,7 @@ void iniciaStrutcDf(tpAluno *stru,int n)
 }
 
 
-/* tpAluno* veQuemPassou(dadosAlunos *stru)
-{
-    int i;
-    for()
-}*/
+
 float media(dadosAlunos *alunos,int i)
 {
     float m1=0,m2=0,m3=0,media=0;
@@ -674,11 +670,12 @@ void printaSaida(tpAluno *vetor,int quant)
 }
 void bolsistas(tpAluno *vetor,int tamanho)
 {
-    int troca,i,cont=0;
-    tpAluno aux;
-    
-    do
-    {
+   int troca,i,cont=0,copiaTamanho=tamanho,x;
+   tpAluno aux;
+   FILE *suplente;
+   /*ordena o vetor de quem passou pelas notas  */
+   do
+   {
         troca = 0;
         for(i=0;i<tamanho-1;i++)
         {
@@ -700,27 +697,83 @@ void bolsistas(tpAluno *vetor,int tamanho)
             }              
         }
         tamanho=tamanho-1;
-    } 
-    while(troca!=0);
-  
-    i=0;
-    do{
-        if(vetor[i].mediaF >= 9.5)
-        {
-            printf("\n %s \n media final : %f\n",vetor[i].nome,vetor[i].mediaF);
-            cont++;
-        }
-    i++;
-    }
-    while(cont<5 && i <= 100);
+   } 
+   while(troca!=0);
+   
+   /*separar quem tem media pra bolsa */
+   for(x=0;x<copiaTamanho;x++)
+   {
+      if(vetor[x].mediaF<9.5)
+      {
+         vetor[x].mediaF = 0;
+      }
+      printf("%f",vetor[x].mediaF);
+   }
+   i=0;
+   cont=0;
+
+   while(vetor[i].mediaF != 0)
+   {
+      //if(vetor[i].mediaF !=0)
+      //{
+            if(cont<4)
+            {
+               printf("\n %s \n media final : %f\n",vetor[i].nome,vetor[i].mediaF);
+               
+               cont++;
+               i++;
+            }
+            if(cont==4)
+            {
+               
+               if(vetor[i].mediaF==vetor[i+1].mediaF && vetor[i].mediaP > vetor[i+1].mediaP)
+               {
+                  printf("\n %s \n media final : %f\n",vetor[i].nome,vetor[i].mediaF);
+                  vetor[i].mediaF=0;
+               }
+               if(vetor[i].mediaF==vetor[i+1].mediaF && vetor[i].mediaP < vetor[i+1].mediaP)
+               {
+                  printf("\n %s \n media final : %f\n",vetor[i+1].nome,vetor[i+1].mediaF);
+                  vetor[i+1].mediaF=0;
+               }
+               if(vetor[i].mediaF==vetor[i+1].mediaF && vetor[i].mediaP == vetor[i+1].mediaP)
+               {
+                  puts("\n :::::empate:::::\n");
+                  printf("\n %s \n media final : %f\n",vetor[i].nome,vetor[i].mediaF);
+                  printf("\n %s \n media final : %f\n",vetor[i+1].nome,vetor[i+1].mediaF);
+                  vetor[i+1].mediaF=0;
+                  vetor[i].mediaF=0;
+               }
+               if(vetor[i].mediaF != vetor[i+1].mediaF)
+               {
+                  printf("\n %s \n media final : %f\n",vetor[i].nome,vetor[i].mediaF);
+                  vetor[i].mediaF=0;
+               }
+               cont++;
+               i++;
+            }
+            if(cont>4)
+            {
+               if(vetor[i].mediaF !=0)
+               {
+                  suplente=fopen("suplentes.txt","a");
+               
+                  fprintf(suplente,"%s \n  media final : %f \n",vetor[i].nome,vetor[i].mediaF);
+                  fclose(suplente);
+               }
+               i++;
+            }
+            
+           
+      //}
+      
+   }
+   
     
-    if(cont == 0){
-        puts("nenhum   aluno aprovado de PB alcancou Media Final ≥ 9,5");
-    }
-    if (cont==5 && vetor[i].mediaF == vetor[i+1].mediaF)
-    {
-       printf("%s \n media final : %f",vetor[i].nome,vetor[i].mediaF);
-    }
+   if(cont == 0){
+     puts("nenhum   aluno aprovado de PB alcancou Media Final ≥ 9,5");
+   }
+   
 }
 
 
